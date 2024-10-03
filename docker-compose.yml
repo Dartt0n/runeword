@@ -8,6 +8,8 @@ services:
       dockerfile: dockerfile
     hostname: backend
     restart: unless-stopped
+    volumes:
+      - inference-cache:/app/.cache
     environment:
       MODEL: openai/whisper-large-v3-turbo
     healthcheck:
