@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-FROM python:3.12-slim as python-base
+FROM python:3.12-slim AS python-base
 
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
@@ -11,13 +11,11 @@ ENV PYTHONUNBUFFERED=1 \
     POETRY_NO_INTERACTION=1 \
     PROJECT_PATH="/opt/project" \
     VENV_PATH="/opt/project/.venv"
-
 ENV PATH="$POETRY_HOME/bin:$VENV_PATH/bin:$PATH"
-FROM python-base as builder-base
-RUN apt-get update \
-    && apt-get install --no-install-recommends -y \
-    curl build-essential
+RUN apt-get update && apt-get install --no-install-recommends -y curl build-essential
 
+
+FROM python-base AS builder-base
 RUN --mount=type=cache,target=/root/.cache \
     curl -sSL https://install.python-poetry.org | python3 -
 
@@ -28,6 +26,7 @@ RUN --mount=type=cache,target=/root/.cache \
     poetry install --without=dev
 
 FROM python-base
+RUN apt-get install --no-install-recommends -y ffmpeg
 COPY --from=builder-base $PROJECT_PATH $PROJECT_PATH
 COPY . /app/
 WORKDIR /app

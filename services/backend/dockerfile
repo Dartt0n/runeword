@@ -11,13 +11,11 @@ ENV PYTHONUNBUFFERED=1 \
     POETRY_NO_INTERACTION=1 \
     PROJECT_PATH="/opt/project" \
     VENV_PATH="/opt/project/.venv"
-
 ENV PATH="$POETRY_HOME/bin:$VENV_PATH/bin:$PATH"
-FROM python-base AS builder-base
-RUN apt-get update \
-    && apt-get install --no-install-recommends -y \
-    curl build-essential
+RUN apt-get update && apt-get install --no-install-recommends -y curl build-essential
 
+
+FROM python-base AS builder-base
 RUN --mount=type=cache,target=/root/.cache \
     curl -sSL https://install.python-poetry.org | python3 -
 

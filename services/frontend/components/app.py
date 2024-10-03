@@ -28,7 +28,7 @@ class App(gr.Interface):
             audio_data = audio_data.mean(axis=1)
 
         r = requests.post(
-            f"http://{os.environ['BACKEND_URL']}/api/v1/inference",
+            f"{os.environ['BACKEND_URL']}/api/v1/inference",
             json={"audio": audio_data.tolist(), "sample_rate": sample_rate},
         )
         r.raise_for_status()
