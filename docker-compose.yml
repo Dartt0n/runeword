@@ -1,0 +1,38 @@
+volumes:
+  inference-cache: {}
+
+services:
+  backend:
+    build:
+      context: ./services/backend
+      dockerfile: dockerfile
+    hostname: backend
+    restart: unless-stopped
+    environment:
+      MODEL: openai/whisper-large-v3-turbo
+    healthcheck:
+      test: curl --fail http://localhost:8000/api/v1/health || exit 1
+      start_interval: 30s
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  frontend:
+    build:
+      context: ./services/frontend
+      dockerfile: dockerfile
+    hostname: frontend
+    ports:
+      - 8080:7860
+    restart: unless-stopped
+    depends_on:
+      backend:
+        condition: service_healthy
+    environment:
+      BACKEND_URL: http://backend:8000
+    healthcheck:
+      test: curl --fail http://localhost:7860 || exit 1
+      start_interval: 10s
+      interval: 30s
+      timeout: 10s
+      retries: 3
